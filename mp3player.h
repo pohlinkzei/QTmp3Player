@@ -24,6 +24,7 @@
 #define ACTIVE_PIN 18
 #define READY_PIN 27
 #define SHUTDOWN_PIN 17
+#define S_PIN 10
 
 #define USB_1  '1'
 #define USB_2  '2'
@@ -119,8 +120,8 @@ public:
     struct node* get_last_playlist(void);
     void save_playlist(struct node* list);
     void delete_all_playlists(struct node* list);
-
     int ser;
+    int no_ser_count;
     std::string radio_string;
     QProcess* navit;
     struct node* PlayListHead;

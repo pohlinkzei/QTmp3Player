@@ -525,14 +525,16 @@ void mp3player::print_song(void){
 }
 int mp3player::mp3init(void){
 
-
+    no_ser_count =0;
     if (wiringPiSetupGpio () == -1){
         printf("WiringPi setup failed!");
         return 1 ;
     }
     status = status_mp3player;
     pinMode(READY_PIN, OUTPUT);
+    pinMode(S_PIN, OUTPUT);
     pinMode(ACTIVE_PIN, OUTPUT);
+    digitalWrite(S_PIN, HIGH);
     digitalWrite(ACTIVE_PIN, HIGH);
     digitalWrite(READY_PIN, LOW);
     pinMode(SHUTDOWN_PIN, INPUT);
@@ -790,7 +792,13 @@ void mp3player::mp3_task(){
             printf("Status: OFF!\n");
             return;
         }
-
+        no_ser_count = 0;
+    }else{
+        no_ser_count++;
+        if(no_ser_count == 400){
+            //we are idle? no info from navi? try to reactivate it.
+            serialPutchar(ser, 0xFF);
+        }
     }
 }
 
