@@ -410,7 +410,7 @@ void mp3player::print_song(void){
     char text[64];
 
     // Open the command for reading.
-    fp = popen("mpc", "r");
+    fp = popen("mpc -f '%artist% - %album%\n%title%'", "r");
     if (fp == NULL) {
         printf("Failed to run command\n" );
         return;
@@ -423,24 +423,24 @@ void mp3player::print_song(void){
     //    ui->stackedWidget->setCurrentIndex(2);
     //}
 	// das playlistlabel hält bei schriftgröße 12f 29Zeichen, 10f 37 Zeichen
-    if(strlen(get_data(CurrentPlayList)) < 28){
+/*    if(strlen(get_data(CurrentPlayList)) < 28){
         QFont font = ui->mp3_label_playlist_2->font();
-        font.setPointSize(12);
+        font.setPointSize(2*12);
 		ui->mp3_label_playlist_2->setFont(font);
     }else if(strlen(get_data(CurrentPlayList)) <38) {
         QFont font = ui->mp3_label_playlist_2->font();
-        font.setPointSize(10);
+        font.setPointSize(2*10);
 		ui->mp3_label_playlist_2->setFont(font);
     }else if(strlen(get_data(CurrentPlayList)) < 45){
         QFont font = ui->mp3_label_playlist_2->font();
-        font.setPointSize(8);
+        font.setPointSize(2*8);
         ui->mp3_label_playlist_2->setFont(font);
     }else{
         QFont font = ui->mp3_label_playlist_2->font();
-        font.setPointSize(7);
+        font.setPointSize(2*7);
         ui->mp3_label_playlist_2->setFont(font);
     }
-
+*/
     // Read the output a line at a time - output it.
     while (fgets(text, sizeof(text)-1, fp) != NULL) {
         strtok(text, "\n");
@@ -454,9 +454,17 @@ void mp3player::print_song(void){
             ui->mp3_label_playlist_2->setText(get_data(CurrentPlayList));
             QString text = ui->mp3_label_playlist_2->text();
             text.append(" R");
+            if(backcount > 0){
+                text.append("*");
+            }
             ui->mp3_label_playlist_2->setText(text);
         }else if(QText.contains("random: off")){
             ui->mp3_label_playlist_2->setText(get_data(CurrentPlayList));
+            QString text = ui->mp3_label_playlist_2->text();
+            if(backcount > 0){
+                text.append("*");
+            }
+            ui->mp3_label_playlist_2->setText(text);
         }
         if(QText.contains("single: on")){
             ui->label6->setText("Single on");
@@ -470,21 +478,54 @@ void mp3player::print_song(void){
                 CurrentPlayList = next_playlist(CurrentPlayList);
                 return;
             }
+	    if(QText.length() < 28){
+	        QFont font = ui->mp3_label_playlist_2->font();
+            font.setPointSize(2*12);
+	        ui->mp3_label_playlist_2->setFont(font);
+	    }else if(QText.length() <38) {
+	        QFont font = ui->mp3_label_playlist_2->font();
+            font.setPointSize(2*10);
+	                ui->mp3_label_playlist_2->setFont(font);
+	    }else if(QText.length() < 45){
+	        QFont font = ui->mp3_label_playlist_2->font();
+            font.setPointSize(2*8);
+	        ui->mp3_label_playlist_2->setFont(font);
+	    }else{
+	        QFont font = ui->mp3_label_playlist_2->font();
+            font.setPointSize(2*7);
+	        ui->mp3_label_playlist_2->setFont(font);
+	    }
+
+/*		if(QText.length() < 25){
+			QFont font = ui->mp3_label_playlist_2->font();
+            font.setPointSize(2*14);
+			ui->mp3_label_playlist_2->setFont(font);
+		}else if(QText.length() < 52){
+                    QFont font = ui->mp3_label_playlist_2->font();
+                    font.setPointSize(2*13);
+                    ui->mp3_label_playlist_2->setFont(font);
+                }else{
+                    QFont font = ui->mp3_label_playlist_2->font();
+                    font.setPointSize(2*12);
+                    ui->mp3_label_playlist_2->setFont(font);
+                }
+*/		ui->mp3_label_playlist_2->setText(QText);
+	}else if(l==1){
 
             //if(status == status_mp3player){
                 ui->top_label->setText("Navigation inaktiv");
 				
                 if(QText.length() < 25){
                     QFont font = ui->mp3_label_title_2->font();
-                    font.setPointSize(14);
+                    font.setPointSize(2*14);
 					ui->mp3_label_title_2->setFont(font);
                 }else if(QText.length() < 52){
                     QFont font = ui->mp3_label_title_2->font();
-                    font.setPointSize(13);
+                    font.setPointSize(2*13);
 					ui->mp3_label_title_2->setFont(font);
 				}else{
                     QFont font = ui->mp3_label_title_2->font();
-                    font.setPointSize(12);
+                    font.setPointSize(2*12);
 					ui->mp3_label_title_2->setFont(font);
 				}
 				
@@ -493,21 +534,21 @@ void mp3player::print_song(void){
             /*}else{
                 if(QText.length() < 31){
                     QFont font = ui->top_label->font();
-                    font.setPointSize(12);
+                    font.setPointSize(2*12);
 					ui->top_label->setFont(font);
                 }else if(QText.length() < 46){
                     QFont font = ui->top_label->font();
-                    font.setPointSize(10);
+                    font.setPointSize(2*10);
 					ui->top_label->setFont(font);
 				}else{
                     QFont font = ui->top_label->font();
-                    font.setPointSize(9);
+                    font.setPointSize(2*9);
 					ui->top_label->setFont(font);
 				}
                 ui->top_label->setText(QText);
                 //ui->mp3_label_title_2->setText(QText);
             }
-            //*/
+            // */
             //printf("1: %s\n", text);
             //put first line to label
         }else if(QText.contains("[p")){
@@ -525,17 +566,15 @@ void mp3player::print_song(void){
 }
 int mp3player::mp3init(void){
 
-    no_ser_count =0;
+
     if (wiringPiSetupGpio () == -1){
         printf("WiringPi setup failed!");
         return 1 ;
     }
     status = status_mp3player;
     pinMode(READY_PIN, OUTPUT);
-    pinMode(S_PIN, OUTPUT);
-    pinMode(ACTIVE_PIN, OUTPUT);
-    digitalWrite(S_PIN, HIGH);
-    digitalWrite(ACTIVE_PIN, HIGH);
+    //pinMode(ACTIVE_PIN, OUTPUT);
+    //digitalWrite(ACTIVE_PIN, HIGH);
     digitalWrite(READY_PIN, LOW);
     pinMode(SHUTDOWN_PIN, INPUT);
     sleep(1);
@@ -557,7 +596,7 @@ int mp3player::mp3init(void){
         CurrentPlayList = get_last_playlist();
         //letzte playlist laden
     }
-
+    backcount = 0;
     std::system("mpc play");
 
 
@@ -608,7 +647,7 @@ void mp3player::mp3_task(){
 
 
                 switch(rx){
-                    //*
+                    // *
                     case 0x01:{//String zum tacho - mp3player inaktiv
                         for(int i = 0;i<17;i++){
                             rx = serialGetchar(ser);
@@ -625,12 +664,12 @@ void mp3player::mp3_task(){
                         //return;
                         break;
                     }
-                    //*/
+                    // */
                     case USBenter:{
+			if(backcount == 0){
 
-
-                        std::system("mpc toggle");
-
+                            std::system("mpc toggle");
+			}
 
                         break;
                     }
@@ -725,7 +764,7 @@ void mp3player::mp3_task(){
                     case USBeject:{
                         CurrentPlayList = delete_playlist(CurrentPlayList);
                         std::system("mpc clear");
-                        //*
+                        // *
                         CurrentPlayList = next_playlist(CurrentPlayList);
                         std::system("mpc update");
 
@@ -767,11 +806,11 @@ void mp3player::mp3_task(){
                         break;
                     }
                     case USBplus:{
-
+                        std::system("mpc volume +1");
                         break;
                     }
                     case USBminus:{
-
+                        std::system("mpc volume -1");
                         break;
                     }
                     default:{
@@ -786,19 +825,13 @@ void mp3player::mp3_task(){
         if(ff_count > 10){
             save_playlist(CurrentPlayList);
             system("mpc pause");
-            digitalWrite(ACTIVE_PIN, LOW);
+            //digitalWrite(ACTIVE_PIN, LOW);
             digitalWrite(READY_PIN, HIGH);
             status = status_off;
             printf("Status: OFF!\n");
             return;
         }
-        no_ser_count = 0;
-    }else{
-        no_ser_count++;
-        if(no_ser_count == 400){
-            //we are idle? no info from navi? try to reactivate it.
-            serialPutchar(ser, 0xFF);
-        }
+
     }
 }
 
