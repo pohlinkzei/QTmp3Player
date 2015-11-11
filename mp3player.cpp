@@ -204,6 +204,7 @@ struct node* mp3player::next_playlist(struct node* current){
     strcat(command, get_data(next));
     strcat(command, "\"");
     std::system(&command[0]);
+    save_playlist(next);
     //std::system(strcat("mpc load \"", next->PlayList));
     std::system("mpc play");
     return next;
@@ -227,6 +228,7 @@ struct node* mp3player::prev_playlist(struct node* current){
     strcat(command, get_data(previous));
     strcat(command, "\"");
     std::system(&command[0]);
+    save_playlist(previous);
     //std::system(strcat("mpc load ", previous->PlayList));
     std::system("mpc play");
     return previous;
@@ -269,6 +271,7 @@ struct node* mp3player::next_artist(struct node* current){
     strcat(command, get_data(current));
     strcat(command, "\"");
     std::system(&command[0]);
+    save_playlist(current);
     //std::system(strcat("mpc load \"", next->PlayList));
     std::system("mpc play");
     return current;
@@ -304,6 +307,7 @@ struct node* mp3player::prev_artist(struct node* current){
     strcat(command, get_data(current));
     strcat(command, "\"");
     std::system(&command[0]);
+    save_playlist(current);
     //std::system(strcat("mpc load ", previous->PlayList));
     std::system("mpc play");
     return current;
