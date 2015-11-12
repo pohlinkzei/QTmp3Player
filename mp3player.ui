@@ -517,8 +517,8 @@ color: rgb(232, 232, 232);</string>
      <widget class="QFrame" name="main_frame">
       <property name="geometry">
        <rect>
-        <x>8</x>
-        <y>5</y>
+        <x>16</x>
+        <y>10</y>
         <width>608</width>
         <height>176</height>
        </rect>
